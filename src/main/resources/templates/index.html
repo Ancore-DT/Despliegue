@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout/main :: head('Inicio')}"></head>
+<body>
+    <!-- Barra de navegación -->
+    <nav th:replace="~{layout/main :: navbar}"></nav>
+
+    <!-- Contenido principal -->
+    <div class="container mt-4">
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h2 class="card-title">Bienvenido al Sistema de Gestión Empresarial</h2>
+                        <p class="card-text">Este sistema permite gestionar empleados y proyectos de manera eficiente.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4" sec:authorize="isAuthenticated()">
+            <!-- Tarjeta de Empleados -->
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="card-title mb-0">
+                            <i class="bi bi-people-fill"></i> Empleados
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Gestione la información de los empleados de la empresa.</p>
+                        <ul class="list-group list-group-flush mb-3">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Total de Empleados
+                                <span class="badge bg-primary rounded-pill" th:text="${totalEmpleados ?: 0}">0</span>
+                            </li>
+                        </ul>
+                        <div class="d-grid gap-2">
+                            <a th:href="@{/empleados}" class="btn btn-outline-primary">
+                                <i class="bi bi-list"></i> Ver Empleados
+                            </a>
+                            <a th:href="@{/empleados/nuevo}" class="btn btn-primary">
+                                <i class="bi bi-person-plus"></i> Nuevo Empleado
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tarjeta de Proyectos -->
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-success text-white">
+                        <h3 class="card-title mb-0">
+                            <i class="bi bi-kanban-fill"></i> Proyectos
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Gestione los proyectos y tareas de la empresa.</p>
+                        <ul class="list-group list-group-flush mb-3">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Total de Proyectos
+                                <span class="badge bg-success rounded-pill" th:text="${totalProyectos ?: 0}">0</span>
+                            </li>
+                        </ul>
+                        <div class="d-grid gap-2">
+                            <a th:href="@{/proyectos}" class="btn btn-outline-success">
+                                <i class="bi bi-list"></i> Ver Proyectos
+                            </a>
+                            <a th:href="@{/proyectos/nuevo}" class="btn btn-success">
+                                <i class="bi bi-plus-square"></i> Nuevo Proyecto
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de Administración (solo para administradores) -->
+        <div class="row" sec:authorize="hasRole('ROLE_ADMIN')">
+            <div class="col-md-12 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-dark text-white">
+                        <h3 class="card-title mb-0">
+                            <i class="bi bi-gear-fill"></i> Administración
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Herramientas de administración del sistema.</p>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="d-grid gap-2">
+                                    <a th:href="@{/admin/usuarios}" class="btn btn-outline-dark">
+                                        <i class="bi bi-people"></i> Gestionar Usuarios
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-grid gap-2">
+                                    <a th:href="@{/admin/configuracion}" class="btn btn-outline-dark">
+                                        <i class="bi bi-sliders"></i> Configuración del Sistema
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer th:replace="~{layout/main :: footer}"></footer>
+
+    <!-- Scripts -->
+    <div th:replace="~{layout/main :: scripts}"></div>
+</body>
+</html>

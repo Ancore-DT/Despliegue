@@ -1,0 +1,607 @@
+{
+  "info": {
+    "_postman_id": "empresa-api-collection-2025",
+    "name": "Empresa API - Empleados y Proyectos",
+    "description": "Colección de pruebas para la API REST del sistema de gestión de empresa con MySQL y MongoDB",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "empresa-api"
+  },
+  "auth": {
+    "type": "noauth"
+  },
+  "event": [],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "default"
+    },
+    {
+      "key": "empleadoId",
+      "value": "1",
+      "type": "default"
+    },
+    {
+      "key": "proyectoId",
+      "value": "",
+      "type": "default"
+    },
+    {
+      "key": "tareaId",
+      "value": "",
+      "type": "default"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 - Autenticación",
+      "item": [
+        {
+          "name": "Login - Admin",
+          "event": [],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "username",
+                  "value": "admin",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "admin123",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["login"]
+            },
+            "description": "Login como administrador. La cookie JSESSIONID se guardará automáticamente."
+          },
+          "response": []
+        },
+        {
+          "name": "Login - Usuario",
+          "event": [],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "username",
+                  "value": "user",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "user123",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["login"]
+            },
+            "description": "Login como usuario estándar."
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints para autenticación de usuarios"
+    },
+    {
+      "name": "02 - Empleados (MySQL/JPA)",
+      "item": [
+        {
+          "name": "Listar Todos los Empleados",
+          "event": [],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/empleados",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "empleados"]
+            },
+            "description": "Obtiene la lista completa de empleados desde MySQL"
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener Empleado por ID",
+          "event": [],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/empleados/{{empleadoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "empleados", "{{empleadoId}}"]
+            },
+            "description": "Obtiene un empleado específico por su ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Nuevo Empleado",
+          "event": [],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Carlos\",\n  \"apellido\": \"Rodríguez\",\n  \"cargo\": \"Desarrollador Backend\",\n  \"email\": \"carlos.rodriguez@empresa.com\",\n  \"salario\": 52000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/empleados",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "empleados"]
+            },
+            "description": "Crea un nuevo empleado en la base de datos MySQL"
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar Empleado",
+          "event": [],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Carlos\",\n  \"apellido\": \"Rodríguez Pérez\",\n  \"cargo\": \"Senior Backend Developer\",\n  \"email\": \"carlos.rodriguez@empresa.com\",\n  \"salario\": 60000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/empleados/{{empleadoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "empleados", "{{empleadoId}}"]
+            },
+            "description": "Actualiza todos los datos de un empleado existente"
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar Empleado",
+          "event": [],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/empleados/{{empleadoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "empleados", "{{empleadoId}}"]
+            },
+            "description": "Elimina un empleado de la base de datos"
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar Empleados",
+          "event": [],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/empleados/buscar?termino=Juan",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "empleados", "buscar"],
+              "query": [
+                {
+                  "key": "termino",
+                  "value": "Juan"
+                }
+              ]
+            },
+            "description": "Busca empleados por nombre, apellido o email"
+          },
+          "response": []
+        },
+        {
+          "name": "Verificar Email Existe",
+          "event": [],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/empleados/email/test@empresa.com/existe",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "empleados", "email", "test@empresa.com", "existe"]
+            },
+            "description": "Verifica si un email ya está registrado"
+          },
+          "response": []
+        },
+        {
+          "name": "Empleados por Cargo",
+          "event": [],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/empleados/cargo/Desarrollador",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "empleados", "cargo", "Desarrollador"]
+            },
+            "description": "Obtiene todos los empleados con un cargo específico"
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar Salario",
+          "event": [],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"salario\": 65000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/empleados/{{empleadoId}}/salario",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "empleados", "{{empleadoId}}", "salario"]
+            },
+            "description": "Actualiza únicamente el salario de un empleado"
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints para gestión de empleados (MySQL con JPA)"
+    },
+    {
+      "name": "03 - Proyectos (MongoDB)",
+      "item": [
+        {
+          "name": "Listar Todos los Proyectos",
+          "event": [],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/proyectos",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "proyectos"]
+            },
+            "description": "Obtiene la lista completa de proyectos desde MongoDB"
+          },
+          "response": []
+        },
+        {
+          "name": "Proyectos con Filtros",
+          "event": [],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/proyectos?estado=En progreso&empleadoId=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "proyectos"],
+              "query": [
+                {
+                  "key": "estado",
+                  "value": "En progreso",
+                  "description": "Filtrar por estado"
+                },
+                {
+                  "key": "empleadoId",
+                  "value": "1",
+                  "description": "Filtrar por empleado asignado"
+                }
+              ]
+            },
+            "description": "Lista proyectos con filtros opcionales de estado y empleado"
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener Proyecto por ID",
+          "event": [],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/proyectos/{{proyectoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "proyectos", "{{proyectoId}}"]
+            },
+            "description": "Obtiene un proyecto específico por su ID de MongoDB"
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Nuevo Proyecto",
+          "event": [],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Sistema de Gestión de Clientes\",\n  \"descripcion\": \"Desarrollo de CRM para gestión integral de clientes\",\n  \"empleadoId\": 1,\n  \"fechaEstimadaFin\": \"2025-12-31T23:59:59\",\n  \"estado\": \"Pendiente\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/proyectos",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "proyectos"]
+            },
+            "description": "Crea un nuevo proyecto en MongoDB"
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar Proyecto",
+          "event": [],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Sistema de Gestión de Clientes v2\",\n  \"descripcion\": \"CRM mejorado con análisis predictivo\",\n  \"empleadoId\": 1,\n  \"fechaEstimadaFin\": \"2026-02-28T23:59:59\",\n  \"estado\": \"En progreso\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/proyectos/{{proyectoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "proyectos", "{{proyectoId}}"]
+            },
+            "description": "Actualiza todos los datos de un proyecto existente"
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar Proyecto",
+          "event": [],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/proyectos/{{proyectoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "proyectos", "{{proyectoId}}"]
+            },
+            "description": "Elimina un proyecto de MongoDB"
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar Proyectos por Nombre",
+          "event": [],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/proyectos/buscar?nombre=Sistema",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "proyectos", "buscar"],
+              "query": [
+                {
+                  "key": "nombre",
+                  "value": "Sistema"
+                }
+              ]
+            },
+            "description": "Busca proyectos que contengan el término en su nombre"
+          },
+          "response": []
+        },
+        {
+          "name": "Proyectos por Empleado",
+          "event": [],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/proyectos/empleado/{{empleadoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "proyectos", "empleado", "{{empleadoId}}"]
+            },
+            "description": "Obtiene todos los proyectos asignados a un empleado"
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar Estado del Proyecto",
+          "event": [],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"Completado\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/proyectos/{{proyectoId}}/estado",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "proyectos", "{{proyectoId}}", "estado"]
+            },
+            "description": "Actualiza únicamente el estado de un proyecto (Pendiente, En progreso, Completado, Cancelado)"
+          },
+          "response": []
+        },
+        {
+          "name": "Estadísticas de Proyectos",
+          "event": [],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/proyectos/estadisticas",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "proyectos", "estadisticas"]
+            },
+            "description": "Obtiene estadísticas generales de todos los proyectos (total, por estado, promedio de progreso)"
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints para gestión de proyectos (MongoDB)"
+    },
+    {
+      "name": "04 - Tareas (Embebidas en Proyectos)",
+      "item": [
+        {
+          "name": "Listar Tareas de un Proyecto",
+          "event": [],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/proyectos/{{proyectoId}}/tareas",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "proyectos", "{{proyectoId}}", "tareas"]
+            },
+            "description": "Obtiene todas las tareas de un proyecto específico"
+          },
+          "response": []
+        },
+        {
+          "name": "Agregar Tarea a Proyecto",
+          "event": [],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Implementar autenticación JWT\",\n  \"descripcion\": \"Desarrollar sistema de autenticación con tokens JWT\",\n  \"fechaVencimiento\": \"2025-11-15\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/proyectos/{{proyectoId}}/tareas",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "proyectos", "{{proyectoId}}", "tareas"]
+            },
+            "description": "Agrega una nueva tarea al proyecto (se embebe en el documento de MongoDB)"
+          },
+          "response": []
+        },
+        {
+          "name": "Completar Tarea",
+          "event": [],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/proyectos/{{proyectoId}}/tareas/{{tareaId}}/completar",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "proyectos", "{{proyectoId}}", "tareas", "{{tareaId}}", "completar"]
+            },
+            "description": "Marca una tarea como completada y registra la fecha de finalización"
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar Tarea",
+          "event": [],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/proyectos/{{proyectoId}}/tareas/{{tareaId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "proyectos", "{{proyectoId}}", "tareas", "{{tareaId}}"]
+            },
+            "description": "Elimina una tarea específica de un proyecto"
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints para gestión de tareas embebidas en proyectos (MongoDB subdocumentos)"
+    }
+  ]
+}

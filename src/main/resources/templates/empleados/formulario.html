@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout/main :: head(${empleado.id == null ? 'Nuevo Empleado' : 'Editar Empleado'})}"></head>
+<body>
+    <!-- Barra de navegación -->
+    <nav th:replace="~{layout/main :: navbar}"></nav>
+
+    <!-- Contenido principal -->
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="card-title mb-0">
+                            <i th:class="${empleado.id == null ? 'bi bi-person-plus' : 'bi bi-person-gear'}"></i>
+                            <span th:text="${empleado.id == null ? 'Nuevo Empleado' : 'Editar Empleado'}">Empleado</span>
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <!-- Mensajes de error -->
+                        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+                            <span th:text="${error}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+
+                        <!-- Formulario de empleado -->
+                        <form th:action="@{/empleados/guardar}" 
+                              th:object="${empleado}" method="post" class="needs-validation" novalidate>
+                            
+                            <!-- ID oculto para edición -->
+                            <input type="hidden" th:field="*{id}" />
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="nombre" class="form-label">Nombre</label>
+                                    <input type="text" class="form-control" id="nombre" th:field="*{nombre}" required>
+                                    <div class="invalid-feedback">El nombre es obligatorio</div>
+                                    <div class="text-danger" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="apellido" class="form-label">Apellido</label>
+                                    <input type="text" class="form-control" id="apellido" th:field="*{apellido}" required>
+                                    <div class="invalid-feedback">El apellido es obligatorio</div>
+                                    <div class="text-danger" th:if="${#fields.hasErrors('apellido')}" th:errors="*{apellido}"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" th:field="*{email}" required>
+                                <div class="invalid-feedback">Ingrese un email válido</div>
+                                <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="cargo" class="form-label">Cargo</label>
+                                <input type="text" class="form-control" id="cargo" th:field="*{cargo}" required>
+                                <div class="invalid-feedback">El cargo es obligatorio</div>
+                                <div class="text-danger" th:if="${#fields.hasErrors('cargo')}" th:errors="*{cargo}"></div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="salario" class="form-label">Salario</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" id="salario" th:field="*{salario}" step="0.01" min="0" required>
+                                </div>
+                                <div class="invalid-feedback">El salario debe ser mayor a 0</div>
+                                <div class="text-danger" th:if="${#fields.hasErrors('salario')}" th:errors="*{salario}"></div>
+                            </div>
+                            
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                                <a th:href="@{/empleados}" class="btn btn-secondary me-md-2">
+                                    <i class="bi bi-x-circle"></i> Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-save"></i> Guardar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer th:replace="~{layout/main :: footer}"></footer>
+
+    <!-- Scripts -->
+    <div th:replace="~{layout/main :: scripts}"></div>
+    
+    <!-- Script para validación del formulario -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fetch all forms we want to apply custom validation styles to
+            const forms = document.querySelectorAll('.needs-validation');
+            
+            // Loop over them and prevent submission
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout/main :: head('Proyectos')}"></head>
+<body>
+    <!-- Barra de navegación -->
+    <nav th:replace="~{layout/main :: navbar}"></nav>
+
+    <!-- Contenido principal -->
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="bi bi-kanban"></i> Gestión de Proyectos</h2>
+            <a th:href="@{/proyectos/nuevo}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Nuevo Proyecto
+            </a>
+        </div>
+
+        <!-- Mensajes de alerta -->
+        <div th:if="${mensaje}" class="alert alert-success alert-dismissible fade show">
+            <span th:text="${mensaje}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Formulario de búsqueda -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <form th:action="@{/proyectos}" method="get" class="row g-3">
+                    <div class="col-md-4">
+                        <label for="nombre" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="nombre" name="nombre" th:value="${param.nombre}">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="estado" class="form-label">Estado</label>
+                        <select class="form-select" id="estado" name="estado">
+                            <option value="">Todos</option>
+                            <option value="PENDIENTE" th:selected="${param.estado == 'PENDIENTE'}">Pendiente</option>
+                            <option value="EN_PROGRESO" th:selected="${param.estado == 'EN_PROGRESO'}">En Progreso</option>
+                            <option value="COMPLETADO" th:selected="${param.estado == 'COMPLETADO'}">Completado</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary me-2">
+                            <i class="bi bi-search"></i> Buscar
+                        </button>
+                        <a th:href="@{/proyectos}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Limpiar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tarjetas de proyectos -->
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            <div class="col" th:if="${proyectos.empty}">
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> No hay proyectos registrados
+                </div>
+            </div>
+            <div class="col" th:each="proyecto : ${proyectos}">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header" th:classappend="${proyecto.estado == 'EN_PROGRESO' ? 'bg-warning' : (proyecto.estado == 'COMPLETADO' ? 'bg-success text-white' : 'bg-primary text-white')}">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0" th:text="${proyecto.nombre}">Nombre del Proyecto</h5>
+                            <span class="badge" th:classappend="${proyecto.estado == 'EN_PROGRESO' ? 'bg-warning text-dark' : (proyecto.estado == 'COMPLETADO' ? 'bg-success' : 'bg-primary')}" 
+                                  th:text="${proyecto.estado == 'EN_PROGRESO' ? 'En Progreso' : (proyecto.estado == 'COMPLETADO' ? 'Completado' : 'Pendiente')}">Estado</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text" th:text="${#strings.abbreviate(proyecto.descripcion, 150)}">Descripción del proyecto...</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                <i class="bi bi-calendar"></i> <span th:text="${#temporals.format(proyecto.fechaCreacion, 'dd/MM/yyyy')}">01/01/2023</span>
+                            </small>
+                            <small class="text-muted">
+                                <i class="bi bi-people"></i> <span th:text="${proyecto.empleados != null ? proyecto.empleados.size() : 0}">3</span> empleados
+                            </small>
+                        </div>
+                        <div class="progress mt-3" th:if="${proyecto.tareas != null && !proyecto.tareas.empty}">
+                            <div class="progress-bar" role="progressbar" 
+                                 th:style="'width: ' + ${proyecto.porcentajeCompletado} + '%'" 
+                                 th:aria-valuenow="${proyecto.porcentajeCompletado}" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="100" 
+                                 th:text="${proyecto.porcentajeCompletado + '%'}">25%</div>
+                        </div>
+                        <div class="text-muted small mt-1" th:if="${proyecto.tareas != null && !proyecto.tareas.empty}">
+                            <span th:text="${proyecto.tareasCompletadas}">2</span>/<span th:text="${proyecto.tareas.size()}">8</span> tareas completadas
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <div class="d-flex justify-content-between">
+                            <a th:href="@{/proyectos/{id}(id=${proyecto.id})}" class="btn btn-info btn-sm">
+                                <i class="bi bi-eye"></i> Ver
+                            </a>
+                            <div>
+                                <a th:href="@{/proyectos/{id}/editar(id=${proyecto.id})}" class="btn btn-warning btn-sm">
+                                    <i class="bi bi-pencil"></i> Editar
+                                </a>
+                                <button type="button" class="btn btn-danger btn-sm" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#eliminarModal"
+                                        th:data-bs-id="${proyecto.id}"
+                                        th:data-bs-nombre="${proyecto.nombre}">
+                                    <i class="bi bi-trash"></i> Eliminar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmación para eliminar -->
+    <div class="modal fade" id="eliminarModal" tabindex="-1" aria-labelledby="eliminarModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="eliminarModalLabel">Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Está seguro que desea eliminar el proyecto <span id="nombreProyecto"></span>?</p>
+                    <p class="text-danger">Esta acción eliminará todas las tareas asociadas y no se puede deshacer.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button id="btnEliminar" class="btn btn-danger" type="button">Eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer th:replace="~{layout/main :: footer}"></footer>
+
+    <!-- Scripts -->
+    <div th:replace="~{layout/main :: scripts}"></div>
+    
+    <!-- Script para el modal de eliminación -->
+    <script>
+        let proyectoIdAEliminar = null;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const eliminarModal = document.getElementById('eliminarModal');
+            const btnEliminar = document.getElementById('btnEliminar');
+            
+            if (eliminarModal) {
+                eliminarModal.addEventListener('show.bs.modal', function(event) {
+                    const button = event.relatedTarget;
+                    proyectoIdAEliminar = button.getAttribute('data-bs-id');
+                    const nombre = button.getAttribute('data-bs-nombre');
+                    
+                    const nombreProyecto = document.getElementById('nombreProyecto');
+                    nombreProyecto.textContent = nombre;
+                });
+            }
+            
+            if (btnEliminar) {
+                btnEliminar.addEventListener('click', function() {
+                    if (proyectoIdAEliminar) {
+                        eliminarProyecto(proyectoIdAEliminar);
+                    }
+                });
+            }
+        });
+        
+        function eliminarProyecto(id) {
+            // Leer token CSRF desde meta tags (a adnadas en layout/main)
+            const tokenMeta = document.querySelector('meta[name="_csrf"]');
+            const headerMeta = document.querySelector('meta[name="_csrf_header"]');
+            const token = tokenMeta ? tokenMeta.getAttribute('content') : null;
+            const header = headerMeta ? headerMeta.getAttribute('content') : 'X-CSRF-TOKEN';
+
+            const urlDelete = `/proyectos/api/eliminar/${id}`;
+            console.debug('Intentando eliminar (DELETE):', urlDelete);
+
+            // Intento principal: DELETE con header CSRF
+            fetch(urlDelete, {
+                method: 'DELETE',
+                headers: Object.assign({ 'Content-Type': 'application/json' }, token ? { [header]: token } : {})
+            })
+            .then(response => {
+                if (response.status === 403) {
+                    // Posible problema con CSRF/DELETE: intentar fallback a POST
+                    console.warn('DELETE recibido 403, intentando fallback POST a endpoint /{id}/eliminar');
+                    return intentarEliminarConPost(id, token, header);
+                }
+                const contentType = response.headers.get('content-type') || '';
+                if (!response.ok) {
+                    return response.text().then(text => { throw { status: response.status, text }; });
+                }
+                if (contentType.includes('application/json')) {
+                    return response.json();
+                }
+                return response.text().then(text => ({ success: false, mensaje: text }));
+            })
+            .then(data => {
+                // manejar resultado tanto de DELETE como de fallback POST
+                if (data && data.success) {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('eliminarModal'));
+                    if (modal) modal.hide();
+                    mostrarMensaje(data.mensaje || 'Proyecto eliminado', 'success');
+                    setTimeout(() => window.location.reload(), 1200);
+                } else if (data && data.success === false) {
+                    mostrarMensaje(data.mensaje || 'Error desconocido', 'danger');
+                }
+            })
+            .catch(err => {
+                console.error('Error al eliminar (DELETE):', err);
+                // Si ocurre un error de red u otro, intentar fallback a POST
+                intentarEliminarConPost(id, token, header)
+                    .then(data => {
+                        if (data && data.success) {
+                            mostrarMensaje(data.mensaje || 'Proyecto eliminado', 'success');
+                            setTimeout(() => window.location.reload(), 1200);
+                        } else {
+                            mostrarMensaje(data && data.mensaje ? data.mensaje : 'Error al eliminar el proyecto', 'danger');
+                        }
+                    })
+                    .catch(e => {
+                        console.error('Error fallback POST:', e);
+                        mostrarMensaje('Error al eliminar el proyecto', 'danger');
+                    });
+            });
+        }
+
+        // Fallback: enviar POST a /proyectos/{id}/eliminar con _csrf (form-encoded)
+        function intentarEliminarConPost(id, token, headerName) {
+            return new Promise((resolve, reject) => {
+                const urlPost = `/proyectos/${id}/eliminar`;
+                console.debug('Intentando eliminar (POST fallback):', urlPost);
+
+                const formData = new URLSearchParams();
+                if (token) {
+                    // Spring espera el token en el header; pero en forms funciona con campo _csrf
+                    formData.append('_csrf', token);
+                }
+
+                fetch(urlPost, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData.toString()
+                })
+                .then(response => {
+                    const contentType = response.headers.get('content-type') || '';
+                    if (!response.ok) {
+                        return response.text().then(text => { throw { status: response.status, text }; });
+                    }
+                    if (contentType.includes('application/json')) {
+                        return response.json();
+                    }
+                    // Si la respuesta es HTML (redirect), consideramos éxito
+                    return { success: true, mensaje: 'Proyecto eliminado (por POST)' };
+                })
+                .then(resolve)
+                .catch(reject);
+            });
+        }
+        
+        function mostrarMensaje(mensaje, tipo) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${tipo} alert-dismissible fade show`;
+            alertDiv.innerHTML = `
+                <span>${mensaje}</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            const container = document.querySelector('.container');
+            const firstChild = container.firstElementChild.nextElementSibling;
+            container.insertBefore(alertDiv, firstChild);
+        }
+    </script>
+</body>
+</html>

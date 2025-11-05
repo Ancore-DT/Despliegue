@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/main :: head('Recuperar Contraseña')}"></head>
+<body>
+<nav th:replace="~{layout/main :: navbar}"></nav>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">Recuperar Contraseña</div>
+                <div class="card-body">
+                    <div th:if="${mensaje}" class="alert alert-success" th:text="${mensaje}"></div>
+                    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+                    <form th:action="@{/olvidaste-contrasena}" method="post">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Nombre de usuario o email</label>
+                            <input type="text" id="username" name="username" class="form-control" required>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Enviar instrucciones</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<footer th:replace="~{layout/main :: footer}"></footer>
+<div th:replace="~{layout/main :: scripts}"></div>
+</body>
+</html>

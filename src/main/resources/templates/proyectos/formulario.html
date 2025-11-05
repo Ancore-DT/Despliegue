@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout/main :: head(${proyecto.id == null ? 'Nuevo Proyecto' : 'Editar Proyecto'})}"></head>
+<body>
+    <!-- Barra de navegación -->
+    <nav th:replace="~{layout/main :: navbar}"></nav>
+
+    <!-- Contenido principal -->
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="card-title mb-0">
+                            <i th:class="${proyecto.id == null ? 'bi bi-plus-circle' : 'bi bi-pencil-square'}"></i>
+                            <span th:text="${proyecto.id == null ? 'Nuevo Proyecto' : 'Editar Proyecto'}">Proyecto</span>
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <!-- Mensajes de error -->
+                        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+                            <span th:text="${error}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+
+                        <!-- Formulario de proyecto -->
+                        <form th:action="${proyecto.id == null ? '/proyectos/guardar' : '/proyectos/' + proyecto.id + '/actualizar'}" 
+                              th:object="${proyecto}" method="post" class="needs-validation" novalidate>
+                            
+                            <!-- ID oculto para edición: solo renderizar si ya existe id (evitar enviar cadena vacía) -->
+                            <input type="hidden" th:if="${proyecto.id != null}" th:field="*{id}" />
+                            
+                            <div class="mb-3">
+                                <label for="nombre" class="form-label">Nombre del Proyecto</label>
+                                <input type="text" class="form-control" id="nombre" th:field="*{nombre}" required>
+                                <div class="invalid-feedback">El nombre del proyecto es obligatorio</div>
+                                <div class="text-danger" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="descripcion" class="form-label">Descripción</label>
+                                <textarea class="form-control" id="descripcion" th:field="*{descripcion}" rows="4" required></textarea>
+                                <div class="invalid-feedback">La descripción es obligatoria</div>
+                                <div class="text-danger" th:if="${#fields.hasErrors('descripcion')}" th:errors="*{descripcion}"></div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="fechaCreacion" class="form-label">Fecha de Creación</label>
+                                    <input type="datetime-local" class="form-control" id="fechaCreacion" th:field="*{fechaCreacion}" required>
+                                    <div class="invalid-feedback">La fecha de creación es obligatoria</div>
+                                    <div class="text-danger" th:if="${#fields.hasErrors('fechaCreacion')}" th:errors="*{fechaCreacion}"></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="fechaEstimadaFin" class="form-label">Fecha de Fin (Estimada)</label>
+                                    <input type="datetime-local" class="form-control" id="fechaEstimadaFin" th:field="*{fechaEstimadaFin}">
+                                    <div class="text-danger" th:if="${#fields.hasErrors('fechaEstimadaFin')}" th:errors="*{fechaEstimadaFin}"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="estado" class="form-label">Estado</label>
+                                <select class="form-select" id="estado" th:field="*{estado}" required>
+                                    <option value="PENDIENTE">Pendiente</option>
+                                    <option value="EN_PROGRESO">En Progreso</option>
+                                    <option value="COMPLETADO">Completado</option>
+                                </select>
+                                <div class="invalid-feedback">Seleccione un estado</div>
+                                <div class="text-danger" th:if="${#fields.hasErrors('estado')}" th:errors="*{estado}"></div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Empleados Asignados</label>
+                                <div class="card">
+                                    <div class="card-body p-2" style="max-height: 200px; overflow-y: auto;">
+                                        <div class="form-check" th:each="empleado : ${empleados}">
+                                            <input class="form-check-input" type="checkbox" 
+                                                   th:value="${empleado.id}" 
+                                                   th:id="'empleado' + ${empleado.id}" 
+                                                   name="empleadosIds" 
+                                                   th:checked="${proyecto.empleados != null && proyecto.empleados.contains(empleado)}">
+                                            <label class="form-check-label" th:for="'empleado' + ${empleado.id}" 
+                                                   th:text="${empleado.nombre + ' ' + empleado.apellido + ' (' + empleado.cargo + ')'}">
+                                                Nombre del Empleado
+                                            </label>
+                                        </div>
+                                        <div th:if="${#lists.isEmpty(empleados)}" class="text-center text-muted">
+                                            No hay empleados disponibles
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                                <a th:href="@{/proyectos}" class="btn btn-secondary me-md-2">
+                                    <i class="bi bi-x-circle"></i> Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-save"></i> Guardar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer th:replace="~{layout/main :: footer}"></footer>
+
+    <!-- Scripts -->
+    <div th:replace="~{layout/main :: scripts}"></div>
+    
+    <!-- Script para validación del formulario -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fetch all forms we want to apply custom validation styles to
+            const forms = document.querySelectorAll('.needs-validation');
+            
+            // Loop over them and prevent submission
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    
+                    form.classList.add('was-validated');
+                }, false);
+            });
+            
+            // Validación adicional para fechas
+            const fechaCreacion = document.getElementById('fechaCreacion');
+            const fechaEstimadaFin = document.getElementById('fechaEstimadaFin');
+            
+            if (fechaCreacion && fechaEstimadaFin) {
+                fechaEstimadaFin.addEventListener('change', function() {
+                    if (fechaCreacion.value && fechaEstimadaFin.value && new Date(fechaEstimadaFin.value) < new Date(fechaCreacion.value)) {
+                        fechaEstimadaFin.setCustomValidity('La fecha estimada de fin debe ser posterior a la fecha de creación');
+                    } else {
+                        fechaEstimadaFin.setCustomValidity('');
+                    }
+                });
+                
+                fechaCreacion.addEventListener('change', function() {
+                    if (fechaCreacion.value && fechaEstimadaFin.value && new Date(fechaEstimadaFin.value) < new Date(fechaCreacion.value)) {
+                        fechaEstimadaFin.setCustomValidity('La fecha estimada de fin debe ser posterior a la fecha de creación');
+                    } else {
+                        fechaEstimadaFin.setCustomValidity('');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

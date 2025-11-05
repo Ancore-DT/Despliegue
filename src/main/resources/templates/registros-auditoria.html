@@ -1,0 +1,16 @@
+<!-- botón para generar informe -->
+<button type="button" onclick="promptReportFormat()" class="btn btn-primary">Generar informe</button>
+
+<script>
+function promptReportFormat() {
+    const choice = prompt("Seleccione formato para exportar: 'pdf' o 'excel' (xlsx).", "pdf");
+    if (!choice) return;
+    const fmt = choice.trim().toLowerCase();
+    if (fmt !== 'pdf' && fmt !== 'excel' && fmt !== 'xlsx') {
+        alert("Formato no válido. Usa 'pdf' o 'excel'.");
+        return;
+    }
+    const url = '/report/employees?format=' + encodeURIComponent(fmt);
+    window.open(url, '_blank');
+}
+</script>
